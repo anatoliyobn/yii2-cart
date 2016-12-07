@@ -8,8 +8,8 @@ class ChangeCount extends \yii\base\Widget
 {
     public $model = NULL;
     public $lineSelector = 'li'; //Селектор материнского элемента, где выводится элемент
-    public $downArr = '⟨';
-    public $upArr = '⟩';
+    public $downArr = '<span class="glyphicon glyphicon-minus"></span> ';
+    public $upArr = ' <span class="glyphicon glyphicon-plus"></span>';
     public $cssClass = 'pistol88-change-count';
     public $defaultValue = 1;
     public $showArrows = true;

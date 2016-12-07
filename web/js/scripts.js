@@ -73,24 +73,37 @@ pistol88.cart = {
     },
     deleteElement: function() {
         $(document).trigger("deleteCartElement", this);
-
         var link = this;
         var elementId = jQuery(this).data('id');
-
         pistol88.cart.sendData({elementId: elementId}, jQuery(this).attr('href'));
-
+		
         if(lineSelector = jQuery(this).data('line-selector')) {
             jQuery(link).parents(lineSelector).last().hide('slow');
         }
 
         return false;
     },
+    /*
+    deleteElement: function(elementId) {
+        $(document).trigger("deleteCartElement", this);
+		console.log(elementId);
+		jQuery(this).attr('href', '/cart/element/delete');
+
+		pistol88.cart.sendData({elementId: elementId}, jQuery(this).attr('href'));
+		
+        if(lineSelector = jQuery(this).data('line-selector')) {
+            jQuery(link).parents(lineSelector).last().hide('slow');
+        }
+
+        return false;
+    },
+    */
     changeInputValue: function() {
         var val = parseInt(jQuery(this).siblings('input').val());
         var input = jQuery(this).siblings('input');
         
         if(jQuery(this).hasClass('pistol88-downArr')) {
-            if(val <= 0) {
+            if(val <= 1) {
                 return false;
             }
             jQuery(input).val(val-1);
@@ -149,6 +162,9 @@ pistol88.cart = {
         return false;
     },
     truncate: function() {
+    	if (!jQuery(this).attr('href')) {
+    		jQuery(this).attr('href', '/cart/default/truncate');
+    	}    	
         pistol88.cart.sendData({}, jQuery(this).attr('href'));
         return false;
     },

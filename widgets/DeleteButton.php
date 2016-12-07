@@ -9,6 +9,8 @@ class DeleteButton extends \yii\base\Widget
     public $model = NULL;
     public $cssClass = 'btn btn-danger';
     public $lineSelector = 'li';  //Селектор материнского элемента, где выводится элемент
+    
+    
 
     public function init()
     {
@@ -19,12 +21,12 @@ class DeleteButton extends \yii\base\Widget
         if ($this->text == NULL) {
             $this->text = '╳';
         }
-        
         return true;
     }
 
     public function run()
     {
         return Html::a(Html::encode($this->text), ['/cart/element/delete'], ['data-line-selector' => $this->lineSelector, 'class' => 'pistol88-cart-delete-button '.$this->cssClass, 'data-id' => $this->model->getId()]);
+        //return Html::button(Html::encode($this->text), ['id' => 'wareDelete', 'data-line-selector' => $this->lineSelector, 'data-id' => $this->model->getId(), 'class' => 'btn btn-danger delete']);
     }
 }

@@ -111,7 +111,10 @@ pistol88.cart = {
         else {
             jQuery(input).val(val+1);
         }
-        
+        console.log('change');
+        //$('#TotalCost').load(' #TotalCost');
+        //$( "#TotalCost" ).trigger( "update" );
+
         jQuery(input).change();
         
         return false;
@@ -213,7 +216,7 @@ pistol88.cart = {
         jQuery('.pistol88-cart-price').html(json.price);
 
         jQuery(document).trigger("renderCart", json);
-        
+        $('#TotalCost').load("warescost");
         return true;
     },
 };

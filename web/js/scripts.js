@@ -216,7 +216,7 @@ pistol88.cart = {
         jQuery('.pistol88-cart-price').html(json.price);
 
         jQuery(document).trigger("renderCart", json);
-        $('#TotalCost').load("warescost");
+        $('#WaresCost').load("warescost");
         return true;
     },
 };

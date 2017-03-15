@@ -8,6 +8,7 @@ class TruncateButton extends \yii\base\Widget
 {
     public $text = NULL;
     public $cssClass = 'btn btn-danger';
+    public $typeButton = false;
  
     public function init()
     {
@@ -24,6 +25,9 @@ class TruncateButton extends \yii\base\Widget
 
     public function run()
     {
-        return Html::a(Html::encode($this->text), ['/cart/default/truncate'], ['class' => 'pistol88-cart-truncate-button ' . $this->cssClass]);
+        if ($this->typeButton) {
+            return Html::button(Html::encode($this->text), ['class' => 'btn btn-danger ', 'id' => 'truncate', 'style' => 'margin-left: 5px']);
+        }
+        return Html::a(Html::encode($this->text), ['/cart/default/truncate'], ['class' => $this->cssClass]);        
     }
 }

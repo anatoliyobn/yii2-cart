@@ -28,6 +28,7 @@ class ElementsList extends \yii\base\Widget
     public $currencyPosition = null;
     public $showCountArrows = true;
     public $cartHeader = null;
+    public $typeButton = false;
     //public $columns = 4;
     
     public function init()
@@ -45,7 +46,8 @@ class ElementsList extends \yii\base\Widget
             'currency' => $this->currency,
             'otherFields' => $this->otherFields,
             'currencyPosition' => $this->currencyPosition,
-            'showCountArrows' => $this->showCountArrows
+            'showCountArrows' => $this->showCountArrows,
+            'typeButton' => $this->typeButton,
         ];
         
         foreach($paramsArr as $key => $value) {
@@ -100,7 +102,7 @@ class ElementsList extends \yii\base\Widget
         $elements = $this->cart->elements;
 
         if (empty($elements)) {
-            $cart = Html::tag('div', yii::t('cart', 'Your cart empty'), ['class' => 'pistol88-cart pistol88-empty-cart']);
+            $cart = Html::tag('h5', yii::t('cart', 'Your cart empty'), ['class' => 'pistol88-cart pistol88-empty-cart alert alert-danger']);
         } else {
             $cart = Html::tag('ul', Html::tag('li', $this->cartHeader, ['class' => 'pistol88-cart-row ']), ['class' => 'pistol88-cart-list bg-primary']);
         	$cart .= Html::ul($elements, ['item' => function($item, $index) {
@@ -116,11 +118,17 @@ class ElementsList extends \yii\base\Widget
             }
             
             if($this->offerUrl && $this->showOffer) {
-                $bottomPanel .= Html::a(yii::t('cart', 'Offer'), $this->offerUrl, ['class' => 'pistol88-cart-offer-button btn btn-success']);
+                if ($this->typeButton) {
+                    $bottomPanel .= Html::button(yii::t('cart', 'Offer'), ['class' => 'btn btn-success', 'id' => 'checkout', 'data-url' => $this->offerUrl]);
+                } else {
+                    $bottomPanel .= Html::a(yii::t('cart', 'Offer'), $this->offerUrl, ['class' => 'btn btn-primary']);
+                }
             }
             
             if($this->showTruncate) {
-                $bottomPanel .= TruncateButton::widget();
+                $bottomPanel .= TruncateButton::widget([
+                    'typeButton' => $this->typeButton,
+                ]);
             }
             
             $cart .= Html::tag('div', $bottomPanel, ['class' => 'pistol88-cart-bottom-panel']);

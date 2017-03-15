@@ -15,7 +15,8 @@ pistol88.cart = {
         $(document).on('change', '.pistol88-cart-element-before-count', this.changeBeforeElementCount);
         $(document).on('change', '.pistol88-option-values-before', this.changeBeforeElementOptions);
         $(document).on('change', '.pistol88-option-values', this.changeElementOptions);
-        
+        $(document).on('click', '#truncate', this.confirmTruncate);
+        $(document).on('click', '#checkout', this.checkout);        
         return true;
     },
     elementsListWidgetParams: [],
@@ -111,12 +112,7 @@ pistol88.cart = {
         else {
             jQuery(input).val(val+1);
         }
-        console.log('change');
-        //$('#TotalCost').load(' #TotalCost');
-        //$( "#TotalCost" ).trigger( "update" );
-
-        jQuery(input).change();
-        
+        jQuery(input).change();        
         return false;
     },
     changeBeforeElementCount: function() {
@@ -219,6 +215,19 @@ pistol88.cart = {
         $('#WaresCost').load("warescost");
         return true;
     },
+    confirmTruncate: function() {
+        krajeeDialog.confirm("Вы действительно хотите очистить корзину?", function (result) {
+            if (result) {
+                pistol88.cart.truncate();
+            } else {
+                close();
+            }
+        });
+        return false;
+    },
+    checkout: function() {
+        window.location = $("#checkout").data('url');
+    },  
 };
 
 pistol88.cart.init();

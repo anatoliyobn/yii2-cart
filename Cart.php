@@ -66,6 +66,10 @@ class Cart extends Component
                 }
             }
         } else {
+            if (($elementModel->count + $count) > $model->wareLimit) {
+                $count = $model->wareLimit - $elementModel->count; 
+                Yii::$app->session->setFlash('warning', Yii::t('cart', 'The limit of the quantity of the order of the given goods equal to ') . $model->wareLimit);
+            }
             $elementModel->countIncrement($count);
         }
         

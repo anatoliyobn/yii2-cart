@@ -30,4 +30,6 @@ return [
     'Price' => 'Цена',
     'Cost' => 'Стоимость',
     'Add to cart' => 'В корзину',
+    'The limit of the quantity of the order of the given goods equal to ' => 'Достигнуто ограничение количества заказа данного товара, равное ',
+    ' not available' => ' отсутствует в продаже'
 ];

@@ -3,6 +3,7 @@ namespace pistol88\cart\controllers;
 
 use yii\helpers\Json;
 use yii\filters\VerbFilter;
+use common\models\Ware;
 use yii;
 
 class ElementController extends \yii\web\Controller
@@ -52,19 +53,25 @@ class ElementController extends \yii\web\Controller
             $productModel = new $model();
             $productModel = $productModel::findOne($postData['CartElement']['item_id']);
 
-            $options = [];
-            if(isset($postData['CartElement']['options'])) {
-                $options = $postData['CartElement']['options'];
-            }
-
-            if($postData['CartElement']['price'] && $postData['CartElement']['price'] != 'false') {
-                $elementModel = $cart->putWithPrice($productModel, $postData['CartElement']['price'], $postData['CartElement']['count'], $options);
+            if ($productModel->wareLimit > 0) {
+                $options = [];
+                if(isset($postData['CartElement']['options'])) {
+                    $options = $postData['CartElement']['options'];
+                }
+    
+                if($postData['CartElement']['price'] && $postData['CartElement']['price'] != 'false') {
+                    $elementModel = $cart->putWithPrice($productModel, $postData['CartElement']['price'], $postData['CartElement']['count'], $options);
+                } else {
+                    $elementModel = $cart->put($productModel, $postData['CartElement']['count'], $options);
+                }
+    
+                $json['elementId'] = $elementModel->getId();
+                $json['result'] = 'success';
             } else {
-                $elementModel = $cart->put($productModel, $postData['CartElement']['count'], $options);
-            }
-
-            $json['elementId'] = $elementModel->getId();
-            $json['result'] = 'success';
+                $json['result'] = 'fail';
+                $json['error'] = 'no product';
+                Yii::$app->session->setFlash('error', $productModel->name . Yii::t('cart', ' not available'));
+            }            
         } else {
             $json['result'] = 'fail';
             $json['error'] = 'empty model';
@@ -83,8 +90,18 @@ class ElementController extends \yii\web\Controller
 
         $elementModel = $cart->getElementById($postData['CartElement']['id']);
         
+        $wareModel = $elementModel->getModel();
+        
         if(isset($postData['CartElement']['count'])) {
-            $elementModel->setCount($postData['CartElement']['count'], true);
+            if ($wareModel->getWareLimit() == null) {
+                $elementModel->delete();
+                Yii::$app->session->setFlash('error', $wareModel->name . Yii::t('cart', ' not available'));
+            } elseif ($wareModel->getQuantityExceeded($postData['CartElement']['count'])) {
+                $elementModel->setCount($wareModel->getWareLimit(), true);
+                Yii::$app->session->setFlash('warning', Yii::t('cart', 'The limit of the quantity of the order of the given goods equal to ') . $wareModel->getWareLimit());
+            } else {
+                $elementModel->setCount($postData['CartElement']['count'], true);
+            }          
         }
         
         if(isset($postData['CartElement']['options'])) {

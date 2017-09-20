@@ -25,11 +25,12 @@ class CartQuery extends \yii\db\ActiveQuery
                 $new_cart->update();
             } else { // удаляем текущую пустую
                 $new_cart->delete();
+                unset($new_cart);
             }           
             $session->remove('guestHash'); // удалить сессию            
         }
 
-        $one = isset($new_cart) ? $new_cart : $this->andWhere(['user_id' => $userId])->one();
+        $one = isset($new_cart) ? $new_cart : $this->findCart($userId);
         
         if (!$one) {
             $one = $this->createCart($userId);

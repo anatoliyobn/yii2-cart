@@ -23,6 +23,7 @@ class ElementsList extends \yii\base\Widget
     public $showOptions = true;
     public $showOffer = false;
     public $showTruncate = false;
+    public $truncateCss = 'btn btn-danger ';
     public $currency = null;
     public $otherFields = [];
     public $currencyPosition = null;
@@ -128,6 +129,7 @@ class ElementsList extends \yii\base\Widget
             if($this->showTruncate) {
                 $bottomPanel .= TruncateButton::widget([
                     'typeButton' => $this->typeButton,
+                    'cssClass' => $this->truncateCss
                 ]);
             }
             

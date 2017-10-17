@@ -7,7 +7,7 @@ use yii;
 class TruncateButton extends \yii\base\Widget
 {
     public $text = NULL;
-    public $cssClass = 'btn btn-danger';
+    public $cssClass = 'btn btn-danger ';
     public $typeButton = false;
  
     public function init()
@@ -26,7 +26,7 @@ class TruncateButton extends \yii\base\Widget
     public function run()
     {
         if ($this->typeButton) {
-            return Html::button(Html::encode($this->text), ['class' => 'btn btn-danger ', 'id' => 'truncate', 'style' => 'margin-left: 5px']);
+            return Html::button(Html::encode($this->text), ['class' => $this->cssClass, 'id' => 'truncate', 'style' => 'margin-left: 5px']);
         }
         return Html::a(Html::encode($this->text), ['/cart/default/truncate'], ['class' => $this->cssClass]);        
     }

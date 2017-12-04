@@ -77,9 +77,13 @@ pistol88.cart = {
         var link = this;
         var elementId = jQuery(this).data('id');
         pistol88.cart.sendData({elementId: elementId}, jQuery(this).attr('href'));
-		
+                
         if(lineSelector = jQuery(this).data('line-selector')) {
             jQuery(link).parents(lineSelector).last().hide('slow');
+            
+            if( $('#pjax-deliverymethod-form').length ) {
+                afterCartChanged();
+            }           
         }
 
         return false;

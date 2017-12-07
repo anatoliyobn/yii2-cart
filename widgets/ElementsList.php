@@ -31,6 +31,7 @@ class ElementsList extends \yii\base\Widget
     public $cartHeader = null;
     public $typeButton = false;
     //public $columns = 4;
+    public $redirectToShop = false;
     
     public function init()
     {
@@ -44,11 +45,13 @@ class ElementsList extends \yii\base\Widget
             'showOptions' => $this->showOptions,
             'showOffer' => $this->showOffer,
             'showTruncate' => $this->showTruncate,
+            'truncateCss' => $this->truncateCss,
             'currency' => $this->currency,
             'otherFields' => $this->otherFields,
             'currencyPosition' => $this->currencyPosition,
             'showCountArrows' => $this->showCountArrows,
             'typeButton' => $this->typeButton,
+            'redirectToShop' => $this->redirectToShop,
         ];
         
         foreach($paramsArr as $key => $value) {
@@ -101,16 +104,19 @@ class ElementsList extends \yii\base\Widget
     public function run()
     {
         $elements = $this->cart->elements;
-
         if (empty($elements)) {
             $cart = Html::tag('h5', yii::t('cart', 'Your cart empty'), ['class' => 'pistol88-cart pistol88-empty-cart alert alert-danger']);
+            if ($this->redirectToShop) {
+                Yii::$app->getResponse()->redirect('/shop')->send();
+                Yii::$app->end();
+            }
         } else {
             $cart = Html::tag('ul', Html::tag('li', $this->cartHeader, ['class' => 'pistol88-cart-row ']), ['class' => 'pistol88-cart-list bg-primary']);
-        	$cart .= Html::ul($elements, ['item' => function($item, $index) {
+            $cart .= Html::ul($elements, ['item' => function($item, $index) {
                 return $this->_row($item);
             }, 'class' => 'pistol88-cart-list']);
-		}
-		
+        }
+        
         if (!empty($elements)) {
             $bottomPanel = '';
             

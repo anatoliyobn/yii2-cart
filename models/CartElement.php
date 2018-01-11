@@ -37,6 +37,10 @@ class CartElement extends \yii\db\ActiveRecord implements ElementService
             $productModel = new $model();
             if ($productModel = $productModel::findOne($this->item_id)) {
                 $model = $productModel;
+                if ($this->price != $model->price) {
+                    $this->price = $model->price;
+                    $this->save();
+                }                
             } else {
                 yii::$app->cart->truncate();
                 throw new \yii\base\Exception('Element model not found');

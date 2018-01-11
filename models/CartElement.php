@@ -40,6 +40,14 @@ class CartElement extends \yii\db\ActiveRecord implements ElementService
                 if ($this->price != $model->price) {
                     $this->price = $model->price;
                     $this->save();
+                }
+                if ($model->getQuantityExceeded($this->count)) {
+                    $this->count = $model->wareLimit;
+                    if ($this->count == 0) {
+                        $this->delete();
+                    } else {
+                        $this->save();
+                    }                    
                 }                
             } else {
                 yii::$app->cart->truncate();

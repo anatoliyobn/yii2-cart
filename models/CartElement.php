@@ -45,7 +45,7 @@ class CartElement extends \yii\db\ActiveRecord implements ElementService
                 }
                 if ($model->getQuantityExceeded($this->count)) {
                     $this->count = $model->wareLimit;
-                    if ($this->count == 0) {
+                    if ($this->count <= 0) {
                         $this->delete();
                         throw new CartDeleteItemException($model->name . ' ' . Yii::t('cart', 'removed from the cart'));
                     } else {

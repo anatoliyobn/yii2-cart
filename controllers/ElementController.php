@@ -70,7 +70,7 @@ class ElementController extends \yii\web\Controller
             } else {
                 $json['result'] = 'fail';
                 $json['error'] = 'no product';
-                Yii::$app->session->setFlash('error', $productModel->name . Yii::t('cart', ' not available'));
+                Yii::$app->session->setFlash('error', $productModel->name . ' ' . Yii::t('cart', 'not available'));
             }            
         } else {
             $json['result'] = 'fail';
@@ -98,7 +98,7 @@ class ElementController extends \yii\web\Controller
             $wareModel = $elementModel->getModel();
         
             if(isset($postData['CartElement']['count'])) {
-                if ($wareModel->getWareLimit() == null) {
+                if ($wareModel->getWareLimit() <= 0) {
                     $elementModel->delete();
                     Yii::$app->session->setFlash('error', $wareModel->name . ' ' . Yii::t('cart', 'not available'));
                 } elseif ($wareModel->getQuantityExceeded($postData['CartElement']['count'])) {

@@ -90,27 +90,38 @@ class ElementController extends \yii\web\Controller
 
         $elementModel = $cart->getElementById($postData['CartElement']['id']);
         
-        $wareModel = $elementModel->getModel();
-        
-        if(isset($postData['CartElement']['count'])) {
-            if ($wareModel->getWareLimit() == null) {
-                $elementModel->delete();
-                Yii::$app->session->setFlash('error', $wareModel->name . Yii::t('cart', ' not available'));
-            } elseif ($wareModel->getQuantityExceeded($postData['CartElement']['count'])) {
-                $elementModel->setCount($wareModel->getWareLimit(), true);
-                Yii::$app->session->setFlash('warning', Yii::t('cart', 'The limit of the quantity of the order of the given goods equal to ') . $wareModel->getWareLimit());
-            } else {
-                $elementModel->setCount($postData['CartElement']['count'], true);
-            }          
+        if (!$elementModel) {
+            return $this->_cartJson($json);
         }
         
-        if(isset($postData['CartElement']['options'])) {
-            $elementModel->setOptions($postData['CartElement']['options'], true);
-        }
+        try {
+            $wareModel = $elementModel->getModel();
         
-        $json['elementId'] = $elementModel->getId();
-        $json['result'] = 'success';
-
+            if(isset($postData['CartElement']['count'])) {
+                if ($wareModel->getWareLimit() == null) {
+                    $elementModel->delete();
+                    Yii::$app->session->setFlash('error', $wareModel->name . ' ' . Yii::t('cart', 'not available'));
+                } elseif ($wareModel->getQuantityExceeded($postData['CartElement']['count'])) {
+                    $elementModel->setCount($wareModel->getWareLimit(), true);
+                    Yii::$app->session->setFlash('warning', Yii::t('cart', 'The limit of the quantity of the order of the given goods equal to ') . $wareModel->getWareLimit());
+                } else {
+                    $elementModel->setCount($postData['CartElement']['count'], true);
+                }          
+            }
+            
+            if(isset($postData['CartElement']['options'])) {
+                $elementModel->setOptions($postData['CartElement']['options'], true);
+            }
+            
+            $json['elementId'] = $elementModel->getId();
+            $json['result'] = 'success';
+    
+            return $this->_cartJson($json);
+        } catch (\pistol88\cart\exceptions\CartChangeCountException $e) {
+            Yii::$app->session->setFlash('warning', Yii::t('error', $e->getMessage()));
+        } catch (\pistol88\cart\exceptions\CartDeleteItemException $e) {
+            Yii::$app->session->setFlash('error', Yii::t('error', $e->getMessage()));
+        }
         return $this->_cartJson($json);
     }
 

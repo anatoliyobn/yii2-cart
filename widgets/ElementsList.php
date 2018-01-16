@@ -113,7 +113,16 @@ class ElementsList extends \yii\base\Widget
         } else {
             $cart = Html::tag('ul', Html::tag('li', $this->cartHeader, ['class' => 'pistol88-cart-row ']), ['class' => 'pistol88-cart-list bg-primary']);
             $cart .= Html::ul($elements, ['item' => function($item, $index) {
-                return $this->_row($item);
+                try {
+                  $wareModel =  $item->getModel();
+                } catch (\pistol88\cart\exceptions\CartChangeCountException $e) {
+                    Yii::$app->session->setFlash('warning', Yii::t('error', $e->getMessage()));
+                } catch (\pistol88\cart\exceptions\CartDeleteItemException $e) {
+                    Yii::$app->session->setFlash('error', Yii::t('error', $e->getMessage()));
+                }
+                if ($item->getModel()->wareLimit != 0) {
+                    return $this->_row($item);
+                }
             }, 'class' => 'pistol88-cart-list']);
         }
         

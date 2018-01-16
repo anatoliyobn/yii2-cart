@@ -4,6 +4,8 @@ namespace pistol88\cart\models;
 use pistol88\cart\models\Cart;
 use pistol88\cart\events\CartElement as CartElementEvent;
 use pistol88\cart\interfaces\ElementService;
+use pistol88\cart\exceptions\CartChangeCountException;
+use pistol88\cart\exceptions\CartDeleteItemException;
 use yii;
 
 class CartElement extends \yii\db\ActiveRecord implements ElementService
@@ -45,9 +47,11 @@ class CartElement extends \yii\db\ActiveRecord implements ElementService
                     $this->count = $model->wareLimit;
                     if ($this->count == 0) {
                         $this->delete();
+                        throw new CartDeleteItemException($model->name . ' ' . Yii::t('cart', 'removed from the cart'));
                     } else {
                         $this->save();
-                    }                    
+                        throw new CartChangeCountException(Yii::t('cart', 'The quantity of available goods has changed. Check the shopping cart'));
+                    }
                 }                
             } else {
                 yii::$app->cart->truncate();

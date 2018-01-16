@@ -31,5 +31,7 @@ return [
     'Cost' => 'Стоимость',
     'Add to cart' => 'В корзину',
     'The limit of the quantity of the order of the given goods equal to ' => 'Достигнуто ограничение количества заказа данного товара, равное ',
-    ' not available' => ' отсутствует в продаже'
+    'not available' => 'отсутствует в продаже',
+    'removed from the cart' => 'удален из корзины т.к. закончился',
+    'The quantity of available goods has changed. Check the shopping cart' => 'Количество доступного товара изменилось. Проверьте корзину',
 ];

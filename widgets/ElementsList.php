@@ -135,7 +135,7 @@ class ElementsList extends \yii\base\Widget
             
             if($this->offerUrl && $this->showOffer) {
                 if ($this->typeButton) {
-                    $bottomPanel .= Html::button(yii::t('cart', 'Offer'), ['class' => 'btn btn-success', 'id' => 'checkout', 'data-url' => $this->offerUrl]);
+                    $bottomPanel .= Html::button(yii::t('cart', 'Offer'), ['class' => 'btn btn-success', 'id' => 'checkout', 'data-url' => $this->offerUrl,  'data-loading-text' => "<i class='fa fa-spinner fa-spin '></i> Подготовка заказа"]);
                 } else {
                     $bottomPanel .= Html::a(yii::t('cart', 'Offer'), $this->offerUrl, ['class' => 'btn btn-primary']);
                 }

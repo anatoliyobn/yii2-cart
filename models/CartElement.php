@@ -38,21 +38,7 @@ class CartElement extends \yii\db\ActiveRecord implements ElementService
         if(is_string($this->model) && class_exists($this->model)) {
             $productModel = new $model();
             if ($productModel = $productModel::findOne($this->item_id)) {
-                $model = $productModel;
-                if ($this->price != $model->price) {
-                    $this->price = $model->price;
-                    $this->save();
-                }
-                if ($model->getQuantityExceeded($this->count)) {
-                    $this->count = $model->wareLimit;
-                    if ($this->count <= 0) {
-                        $this->delete();
-                        throw new CartDeleteItemException($model->name . ' ' . Yii::t('cart', 'removed from the cart'));
-                    } else {
-                        $this->save();
-                        throw new CartChangeCountException(Yii::t('cart', 'The quantity of available goods has changed. Check the shopping cart'));
-                    }
-                }                
+                $model = $productModel;        
             } else {
                 yii::$app->cart->truncate();
                 throw new \yii\base\Exception('Element model not found');
@@ -98,7 +84,7 @@ class CartElement extends \yii\db\ActiveRecord implements ElementService
         $price = $this->price;
 
 		$cart = yii::$app->cart;
-		
+        
         if($withTriggers) {
             $elementEvent = new CartElementEvent(['element' => $this, 'cost' => $price]);
             $cart->trigger($cart::EVENT_ELEMENT_COST, $elementEvent);
@@ -192,10 +178,10 @@ class CartElement extends \yii\db\ActiveRecord implements ElementService
     
     public function beforeSave($insert)
     {
-        $cart = yii::$app->cart;
+        $cart = $this->cart; //yii::$app->cart;
 
-        $cart->cart->updated_time = time();
-        $cart->cart->save();
+        $cart->updated_time = time();
+        $cart->save();
 
         $elementEvent = new CartElementEvent(['element' => $this]);
         

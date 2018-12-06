@@ -29,10 +29,21 @@ class Cart extends Component
     public $currencyPosition = 'after';
     public $priceFormat = [2, '.', ''];
     
+    /**
+     * @var string|null 
+     */
+    private $promocode;
+    
     public function __construct(interfaces\CartService $cartService, interfaces\ElementService $elementService, $config = [])
     {
         $this->cart = $cartService;
         $this->element = $elementService;
+        
+        if (yii::$app->session->get('promocode')) {
+           $this->applyPromocode(yii::$app->session->get('promocode')); 
+        }
+        
+        $this->updateElementsPriceAndQuantity();
         
         parent::__construct($config);
     }
@@ -197,6 +208,49 @@ class Cart extends Component
         $this->update();
         
         return $truncate;
+    }
+    
+    public function applyPromocode(string $promocode)
+    {
+        $this->promocode = $promocode;
+        $this->updateElementsPriceAndQuantity();
+        $this->update();
+    }
+    
+    public function removePromocode()
+    {
+        $this->promocode = null;
+        $this->updateElementsPriceAndQuantity();
+        $this->update();
+    }
+    
+    public function updateElementsPriceAndQuantity()
+    {
+        foreach ($this->getElements() as $element) {
+            $wareModel = $element->getModel();
+            
+            $element->setPrice($wareModel->getCartPrice($this->promocode));
+            
+            $maxAvailableQuantity = $wareModel->getWareLimit();
+            if ($maxAvailableQuantity) {
+                if ($element->getCount() > $maxAvailableQuantity) {
+                    $element->setCount($maxAvailableQuantity, true);
+                    $element->save(); 
+                    //throw new exceptions\CartChangeCountException(Yii::t('cart', 'The quantity of available goods has changed. Check the shopping cart'));
+                } elseif ($maxAvailableQuantity <= 0) {
+                    $element->delete();
+                    //throw new exceptions\CartDeleteItemException($element->getModel()->name . ' ' . Yii::t('cart', 'removed from the cart'));
+                }
+            } else {
+                $element->delete(); 
+                //throw new exceptions\CartDeleteItemException($element->getModel()->name . ' ' . Yii::t('cart', 'removed from the cart'));
+            }
+        }
+    }
+    
+    public function getPromocode()
+    {
+        return $this->promocode;
     }
     
     private function update()

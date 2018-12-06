@@ -170,12 +170,12 @@ class ElementsList extends \yii\base\Widget
         $columns = [];
 
         $product = $item->getModel();
-        
+      
         $allOptions = $product->getCartOptions();
         
         $cartElName = $product->getCartName();
         
-        $cartPrice = $product->getCartPrice();
+        $cartPrice = $product->getCartPrice($this->cart->promocode);
 
         if($this->showOptions && $item->getOptions()) {
             $options = '';

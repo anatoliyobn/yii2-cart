@@ -237,14 +237,18 @@ class Cart extends Component
                     $element->setCount($maxAvailableQuantity, true);
                     $element->save(); 
                     //throw new exceptions\CartChangeCountException(Yii::t('cart', 'The quantity of available goods has changed. Check the shopping cart'));
+                    continue;
                 } elseif ($maxAvailableQuantity <= 0) {
                     $element->delete();
                     //throw new exceptions\CartDeleteItemException($element->getModel()->name . ' ' . Yii::t('cart', 'removed from the cart'));
+                    continue;
                 }
             } else {
                 $element->delete(); 
+                continue;
                 //throw new exceptions\CartDeleteItemException($element->getModel()->name . ' ' . Yii::t('cart', 'removed from the cart'));
             }
+            $element->save();
         }
     }
     

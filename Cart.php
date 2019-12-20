@@ -7,6 +7,7 @@ use pistol88\cart\events\Cart as CartEvent;
 use pistol88\cart\events\CartElement as CartElementEvent;
 use pistol88\cart\events\CartGroupModels;
 use yii;
+use DateTime;
 
 class Cart extends Component
 {
@@ -29,6 +30,10 @@ class Cart extends Component
     public $currencyPosition = 'after';
     public $priceFormat = [2, '.', ''];
     
+    public $giftConditions = [];   
+    
+    public $cartSumForGift = false;
+    
     /**
      * @var string|null 
      */
@@ -44,7 +49,7 @@ class Cart extends Component
         }
         
         $this->updateElementsPriceAndQuantity();
-        
+       
         parent::__construct($config);
     }
     
@@ -53,6 +58,15 @@ class Cart extends Component
         $this->trigger(self::EVENT_CART_INIT, new CartEvent(['cart' => $this->cart]));
         $this->update();
         
+        if (!empty($this->giftConditions) && isset($this->giftConditions['startDate']) && isset($this->giftConditions['endDate']) && isset($this->giftConditions['minCartSum'])) {
+            $dateStart = new DateTime($this->giftConditions['startDate']);
+            $dateEnd = new DateTime($this->giftConditions['endDate'] . ' 23:59:59');
+            
+            if ((time() > $dateStart->getTimestamp()) && (time() < $dateEnd->getTimestamp())) {
+                $this->cartSumForGift = $this->giftConditions['minCartSum'];
+            }
+        }
+
         return $this;
     }
 

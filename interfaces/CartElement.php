@@ -10,4 +10,6 @@ interface CartElement
     public function getCartPrice();
     
     public function getCartOptions();
+    
+    public function applyForGiftCounting();
 }

@@ -34,4 +34,5 @@ return [
     'not available' => 'отсутствует в продаже',
     'removed from the cart' => 'удален из корзины т.к. закончился',
     'The quantity of available goods has changed. Check the shopping cart' => 'Количество доступного товара изменилось. Проверьте корзину',
+    'Gift' => 'Подарок',
 ];

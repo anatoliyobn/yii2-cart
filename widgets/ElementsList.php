@@ -33,6 +33,17 @@ class ElementsList extends \yii\base\Widget
     //public $columns = 4;
     public $redirectToShop = false;
     
+    /**
+     * @var bool display row with gift
+     */
+    public $showGiftRow = false;
+    
+    /**
+     * @var int 
+     */
+    private $_sumProductsAppliedForGiftCounting = 0;
+    
+    
     public function init()
     {
         $paramsArr = [
@@ -95,7 +106,7 @@ class ElementsList extends \yii\base\Widget
             $columns[] = Html::tag('div', '', ['class' => 'shop-cart-delete col-lg-1 col-md-1 col-xs-1 basket']);        
             $this->cartHeader = html::tag('div', implode('', $columns), ['class' => ' row']);
         }
-   
+        
         \pistol88\cart\assets\WidgetAsset::register($this->getView());
 
         return parent::init();
@@ -112,7 +123,7 @@ class ElementsList extends \yii\base\Widget
             }
         } else {
             $cart = Html::tag('ul', Html::tag('li', $this->cartHeader, ['class' => 'pistol88-cart-row ']), ['class' => 'pistol88-cart-list bg-primary']);
-            $cart .= Html::ul($elements, ['item' => function($item, $index) {
+            $cart .= Html::ul($elements, ['item' => function($item, $index) use ($elements) {
                 try {
                   $wareModel =  $item->getModel();
                 } catch (\pistol88\cart\exceptions\CartChangeCountException $e) {
@@ -121,14 +132,20 @@ class ElementsList extends \yii\base\Widget
                     Yii::$app->session->setFlash('error', Yii::t('error', $e->getMessage()));
                 }
                 if ($item->getModel()->wareLimit != 0) {
-                    return $this->_row($item);
+                    $row = $this->_row($item);
+                    
+                    if ($this->showGiftRow && ($index == (count($elements)-1))) {
+                        return $row . $this->generateGiftRow();
+                    }  
+                    return $row;
                 }
+              
             }, 'class' => 'pistol88-cart-list']);
         }
         
         if (!empty($elements)) {
             $bottomPanel = '';
-            
+                      
             if ($this->showTotal) {
                 $bottomPanel .= Html::tag('div', Yii::t('cart', 'Total') . ': ' . yii::$app->cart->costFormatted, ['class' => 'pistol88-cart-total-row text-right text-info']);
             }
@@ -206,7 +223,30 @@ class ElementsList extends \yii\base\Widget
         
         $return = html::tag('div', implode('', $columns), ['class' => ' row']);
         
+        if (yii::$app->cart->cartSumForGift && $product->applyForGiftCounting()) {
+            $this->_sumProductsAppliedForGiftCounting += $item->getCost(false);
+            if ($this->_sumProductsAppliedForGiftCounting >= yii::$app->cart->cartSumForGift) {
+                $this->showGiftRow = true;
+            }
+        }
+        
         return Html::tag('li', $return, ['class' => 'pistol88-cart-row ']);
+    }
+    
+    /**
+     * @return string
+     */
+    private function generateGiftRow()
+    {
+        $content = yii\bootstrap\Alert::widget([
+            'options' => [
+                'class' => 'alert-success',
+                'style' => 'font-weight: bold; color:#c53b3b; font-size:18px',
+            ],
+            'body' => '<i class="fa fa-gift fa-2x" aria-hidden="true"></i> '.yii::t('cart', 'Gift'), 
+            'closeButton' => false,
+        ]);
+        return Html::tag('li', $content);
     }
     
     private function _getCostFormatted($cost)
